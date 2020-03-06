@@ -1,14 +1,21 @@
-
+--------------------------------------------------------------------------------------------------------------
+------------------------------------- Синтезируемый блок приемника UART --------------------------------------
+-- Generics блока задают параметры приемника, такие как частота тактового сигнала clk, скорость в бодах/с,
+-- количество бит в передаваемом слове, количество стоп-битов, наличие бита четности. Вход rx - сигнал от
+-- UART передатчика; reset - сигнал сброса, активный уровень '1'. Выходы: data - полученное слово данных,
+-- data_valid - строб сигнал для полученных данных и флага ошибки четности, parity_error - флаг ошибки 
+-- четности (активный уровень '1').
+--------------------------------------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity UART_RX is
-    Generic( Clk_Freq   : integer := 200000000;  -- частота тактового сигнала в Гц
-             Baud_Rate  : integer := 9600;       -- 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600
-             Byte_Size  : integer := 8;          -- 5, 6, 7, 8, 9
-             Stop_Bits  : integer := 1;          -- 0, 1, 2
-             Parity_Bit : integer := 0           -- 0 - none, 1 - even, 2 - odd,
+    Generic( Clk_Freq   : integer;  -- частота тактового сигнала в Гц
+             Baud_Rate  : integer;  -- 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600
+             Byte_Size  : integer;  -- 5, 6, 7, 8, 9
+             Stop_Bits  : integer;  -- 0, 1, 2
+             Parity_Bit : integer   -- 0 - none, 1 - even, 2 - odd,
     );
     Port ( clk          : in  STD_LOGIC;
            reset        : in  STD_LOGIC;
@@ -24,7 +31,7 @@ architecture Behavioral of UART_RX is
 constant Bit_Period : integer := Clk_Freq/Baud_Rate;  -- количество тактов на бит
 constant Bit_Period_Half : integer := Bit_Period/2;   -- количество тактов на половину бита
 
--- сигнал для конечного автомата управления
+-- сигналы для конечного автомата управления
 type UART_RX_FSM_Type is (IDLE, FALL_EDGE_DETECTED, START_BIT, DATA_BITS, PARITY_STATE, STOP_BIT_1, STOP_BIT_2);
 signal UART_RX_FSM_State : UART_RX_FSM_Type;
 signal Baud_Gen_Reset : std_logic;
@@ -67,7 +74,7 @@ begin
     end if;
 end process;
 
--- при сбросе счетчик устанавливается в Bit_Period_Half, чтобы ри обнаружении начала передачи
+-- при сбросе счетчик устанавливается в Bit_Period_Half, чтобы при обнаружении начала передачи
 -- отсчитать половину периода бита и попасть на середину старт-бита
 Baud_Generator: process(clk)
 begin
@@ -268,7 +275,7 @@ begin
     end if;
 end process;    
 
--- выходной регистр сдвига
+-- регистр сдвига для данных
 data_shift_register: process(clk)
 begin
     if rising_edge(clk) then
@@ -277,8 +284,8 @@ begin
             output_shift_reg_done <= '0';
             
         elsif Delay_Baud_Generator_Counter = '1' then -- сдвигаем биты от старших разрядов к младшим,
-            if Data_Bits_Flag = '1' then            
-                output_shift_reg(Byte_Size-1) <= input_shift_reg(2);      -- чтобы первый полученный бит оказался в младшем разряде 
+            if Data_Bits_Flag = '1' then              -- чтобы первый полученный бит оказался в младшем разряде
+                output_shift_reg(Byte_Size-1) <= input_shift_reg(2);       
                 output_shift_reg(Byte_Size-2 downto 0) <= output_shift_reg(Byte_Size-1 downto 1);
             end if;
             

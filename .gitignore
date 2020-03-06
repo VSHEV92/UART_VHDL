@@ -2,3 +2,7 @@
 !.gitignore
 !source
 !source/*
+!constraints
+!constraints/*
+!tcl
+!tcl/*
