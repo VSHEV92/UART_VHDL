@@ -18,7 +18,7 @@ begin
 end procedure echo;
 
 ------------------------------------ Параметры теста ------------------------------------
-constant Input_Data_File : string  := "/home/vovan/VivadoProjects/UART_RX/source/input_data.txt";
+constant Input_Data_File : string  := "/home/vovan/VivadoProjects/UART_VHDL/source/input_data.txt";
 constant Baud_Rate       : integer := 9600; -- 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600
 constant Byte_Size       : integer := 8;    -- 5, 6, 7, 8, 9
 constant Stop_Bits       : integer := 1;    -- 0, 1, 2

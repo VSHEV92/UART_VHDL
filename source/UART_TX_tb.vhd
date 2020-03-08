@@ -20,9 +20,9 @@ end procedure echo;
 
 -- После смены параметров Fifo_Latency и Byte_Size необходимо обновить  IP-ядро FIFO
 ------------------------------------ Параметры теста ------------------------------------
-constant Input_Data_File : string  := "/home/vovan/VivadoProjects/UART_RX/source/input_data.txt";
+constant Input_Data_File : string  := "/home/vovan/VivadoProjects/UART_VHDL/source/input_data.txt";
 constant Clk_Freq        : integer := 200000000;  -- частота тактового сигнала в Гц
-constant Fifo_Latency    : integer := 2;          -- задержка выдачи данных из fifo после fifi_re (1 или 2 такта)
+constant Fifo_Latency    : integer := 1;          -- задержка выдачи данных из fifo после fifi_re (1 или 2 такта)
 constant Baud_Rate       : integer := 9600;       -- 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600
 constant Byte_Size       : integer := 8;          -- 5, 6, 7, 8, 9
 constant Stop_Bits       : integer := 1;          -- 0, 1, 2
